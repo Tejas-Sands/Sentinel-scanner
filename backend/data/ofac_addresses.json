@@ -1,0 +1,274 @@
+[
+  {
+    "address": "0x098B716B8Aaf21512996dC57EB0615e2383E2f96",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Lazarus Group",
+    "program": "DPRK",
+    "added_date": "2022-04-14"
+  },
+  {
+    "address": "0xa0e1c89Ef1a489c9C7dE96311eD5Ce5D32c20E4B",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Lazarus Group",
+    "program": "DPRK",
+    "added_date": "2022-04-14"
+  },
+  {
+    "address": "0x3Cffd56B47B7b41c56258D9C7731ABaDc360E460",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Lazarus Group",
+    "program": "DPRK",
+    "added_date": "2022-04-14"
+  },
+  {
+    "address": "0x53b6936513e738f44FB50d2b9476730C0Ab3Bfc1",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Lazarus Group",
+    "program": "DPRK",
+    "added_date": "2022-04-14"
+  },
+  {
+    "address": "0x4F47Bc496083C727c5fbe3CE9CDF2B0f6ace19C1",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Lazarus Group",
+    "program": "DPRK2",
+    "added_date": "2023-08-22"
+  },
+  {
+    "address": "0x08b2048e78C30030f7e8e43A6541aD1a0cA43219",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Lazarus Group",
+    "program": "DPRK2",
+    "added_date": "2023-09-06"
+  },
+  {
+    "address": "0x910Cbd523D972eb0a6f4cAe4618aD62622b39DbF",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Tornado Cash",
+    "program": "CYBER2",
+    "added_date": "2022-08-08"
+  },
+  {
+    "address": "0xA7e5d5A720f06526557c513402f2e6B5fA20b008",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Tornado Cash",
+    "program": "CYBER2",
+    "added_date": "2022-08-08"
+  },
+  {
+    "address": "0x722122dF12D4e14e13Ac3b6895B4128275C06D6",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Tornado Cash",
+    "program": "CYBER2",
+    "added_date": "2022-08-08"
+  },
+  {
+    "address": "0xd90e2f925DA726b50C4Ed8D0Fb90Ad053324F31b",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Tornado Cash",
+    "program": "CYBER2",
+    "added_date": "2022-08-08"
+  },
+  {
+    "address": "0xD4B88Df4D29F5CedD6857912842cff3b20C8Cfa3",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Tornado Cash",
+    "program": "CYBER2",
+    "added_date": "2022-08-08"
+  },
+  {
+    "address": "0xDC73a71cb362E3C07a4eC40242B9324A2D1eE0D5",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Tornado Cash",
+    "program": "CYBER2",
+    "added_date": "2022-08-08"
+  },
+  {
+    "address": "0xA160cdAB225685dA1d56aa342Ad8841c3b53f291",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Tornado Cash",
+    "program": "CYBER2",
+    "added_date": "2022-08-08"
+  },
+  {
+    "address": "0xFD8610d20aA15b7B2E3Be39B396a1bC3516c7144",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Tornado Cash",
+    "program": "CYBER2",
+    "added_date": "2022-08-08"
+  },
+  {
+    "address": "0x07687e702b410Fa43f4cB4Af7FA097918ffD2730",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Tornado Cash",
+    "program": "CYBER2",
+    "added_date": "2022-08-08"
+  },
+  {
+    "address": "0x23773E65ed146A459791799d01336DB287f25334",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Tornado Cash",
+    "program": "CYBER2",
+    "added_date": "2022-08-08"
+  },
+  {
+    "address": "0x12D66f87A04A9E220743712cE6d9bB1B5616B8Fc",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Tornado Cash",
+    "program": "CYBER2",
+    "added_date": "2022-08-08"
+  },
+  {
+    "address": "0x47CE0C6eD5B0Ce3d3A51fd1D7eA50f3f37dF5c7e",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Tornado Cash",
+    "program": "CYBER2",
+    "added_date": "2022-08-08"
+  },
+  {
+    "address": "0x8589427373D6D84E98730D7795D8f6f8731FDA16",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Tornado Cash",
+    "program": "CYBER2",
+    "added_date": "2022-11-08"
+  },
+  {
+    "address": "0xc455f7fd3e0e12afd51fba5c106909934D8A0e4a",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Blender.io",
+    "program": "CYBER2",
+    "added_date": "2022-05-06"
+  },
+  {
+    "address": "0x48549a34ae37b12f6a30566245176994e17C6b4a",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Garantex",
+    "program": "CYBER2",
+    "added_date": "2022-04-05"
+  },
+  {
+    "address": "0x6aCDFBA02D390b97Ac2b2d42A63E85293BCc160e",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Garantex",
+    "program": "CYBER2",
+    "added_date": "2022-04-05"
+  },
+  {
+    "address": "0x1da5821544e25c636c1417ba96Ade4Cf6D2f9B5A",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Chatex",
+    "program": "CYBER2",
+    "added_date": "2021-11-08"
+  },
+  {
+    "address": "0x7F367cC41522cE07553e823bf3be79A889DEbe1B",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Chatex",
+    "program": "CYBER2",
+    "added_date": "2021-11-08"
+  },
+  {
+    "address": "0x19Aa5Fe80D33a56D56c78e82eA5E50E5d80b4dff",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Suex",
+    "program": "CYBER2",
+    "added_date": "2021-09-21"
+  },
+  {
+    "address": "0x2f389cE8bD8ff92De3402FFCe4691d17fC4f6535",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Suex",
+    "program": "CYBER2",
+    "added_date": "2021-09-21"
+  },
+  {
+    "address": "0xe7aa314c77F4233C18C6CC84384A9247c0cf367B",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Suex",
+    "program": "CYBER2",
+    "added_date": "2021-09-21"
+  },
+  {
+    "address": "0x308eD4B7b49797e1A98D3818bFF6fe5385410370",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Ronin Bridge Exploiter (Lazarus)",
+    "program": "DPRK",
+    "added_date": "2022-04-14"
+  },
+  {
+    "address": "0xd882cFc20F52f2599D84b8e8D58C7FB62cfE344b",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Harmony Bridge Exploiter (Lazarus)",
+    "program": "DPRK",
+    "added_date": "2023-01-24"
+  },
+  {
+    "address": "0x901bb9583b24D97e995513C6778dc6888AB6870e",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Tornado Cash: Relayer",
+    "program": "CYBER2",
+    "added_date": "2022-08-08"
+  },
+  {
+    "address": "0xa7e5d5A720f06526557c513402f2e6B5fA20b008",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Tornado Cash: WET token",
+    "program": "CYBER2",
+    "added_date": "2022-08-08"
+  },
+  {
+    "address": "0xCA0840578f57fE71599D29375e16783c44a36196",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Task Force Rusich (Russia)",
+    "program": "RUSSIA-EO14024",
+    "added_date": "2023-09-14"
+  },
+  {
+    "address": "0x6F1cA141A28907F78Ebaa64f83D078e2C6D3B168",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Sim Hyon Sop (DPRK)",
+    "program": "DPRK",
+    "added_date": "2023-04-24"
+  },
+  {
+    "address": "0xfEC8A60023265364D066a1212fDE3930F6Ae8da7",
+    "chain": "ethereum",
+    "list_name": "OFAC SDN",
+    "entity_name": "Sinbad.io",
+    "program": "CYBER2",
+    "added_date": "2023-11-29"
+  }
+]

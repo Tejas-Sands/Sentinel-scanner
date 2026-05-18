@@ -1,0 +1,98 @@
+"""User profile and usage endpoints."""
+
+import json
+import logging
+from datetime import datetime, timezone
+
+from fastapi import APIRouter, Depends, HTTPException
+
+from auth import require_auth
+from database import get_db
+from models import UserResponse, ScanResponse, ScanSummary, Flag, Counterparty
+
+logger = logging.getLogger(__name__)
+router = APIRouter(prefix="/user")
+
+
+@router.get("/me", response_model=UserResponse)
+async def get_current_user(user_id: int = Depends(require_auth)) -> UserResponse:
+    """Get the current user's profile and usage data."""
+    db = await get_db()
+    try:
+        cursor = await db.execute(
+            """SELECT id, email, tier, scans_used_this_month, scans_limit, month_reset, created_at
+               FROM users WHERE id = ?""",
+            (user_id,),
+        )
+        row = await cursor.fetchone()
+
+        if not row:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        # Reset if new month
+        current_month = datetime.now(timezone.utc).strftime("%Y-%m")
+        scans_used = row[3]
+        if (row[5] or "") != current_month:
+            await db.execute(
+                "UPDATE users SET scans_used_this_month = 0, month_reset = ? WHERE id = ?",
+                (current_month, user_id),
+            )
+            await db.commit()
+            scans_used = 0
+
+        return UserResponse(
+            id=row[0],
+            email=row[1],
+            tier=row[2],
+            scans_used_this_month=scans_used,
+            scans_limit=row[4],
+            scans_remaining=max(0, row[4] - scans_used),
+            created_at=row[6],
+        )
+    finally:
+        await db.close()
+
+
+@router.get("/scans")
+async def get_user_scans(
+    user_id: int = Depends(require_auth),
+    limit: int = 20,
+    offset: int = 0,
+) -> dict:
+    """Get the current user's recent scans."""
+    db = await get_db()
+    try:
+        cursor = await db.execute(
+            """SELECT scan_id, address, chain, risk_score, risk_tier, flags, created_at
+               FROM scans WHERE user_id = ?
+               ORDER BY created_at DESC LIMIT ? OFFSET ?""",
+            (user_id, min(limit, 50), offset),
+        )
+        rows = await cursor.fetchall()
+
+        # Get total count
+        count_cursor = await db.execute(
+            "SELECT COUNT(*) FROM scans WHERE user_id = ?", (user_id,),
+        )
+        total = (await count_cursor.fetchone())[0]
+
+        scans = []
+        for row in rows:
+            scans.append({
+                "scan_id": row[0],
+                "address": row[1],
+                "chain": row[2],
+                "risk_score": row[3],
+                "risk_tier": row[4],
+                "flags_count": len(json.loads(row[5])) if row[5] else 0,
+                "created_at": row[6],
+            })
+
+        return {
+            "scans": scans,
+            "total": total,
+            "limit": limit,
+            "offset": offset,
+        }
+    finally:
+        await db.close()

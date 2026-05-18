@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sentinel Scanner — Risk Report</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 20mm 15mm;
+            @bottom-center {
+                content: "Page " counter(page) " of " counter(pages) " — Confidential";
+                font-size: 8pt;
+                color: #6b7280;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 10pt;
+            line-height: 1.5;
+            color: #111827;
+        }
+
+        /* Watermark */
+        {% if show_watermark %}
+        body::before {
+            content: "Sentinel Scanner — Free Report";
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 48pt;
+            font-weight: bold;
+            color: rgba(0, 0, 0, 0.04);
+            z-index: -1;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+        {% endif %}
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #111827;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        .header-logo {
+            font-size: 16pt;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .header-logo span {
+            color: {{ tier_color }};
+        }
+
+        .header-meta {
+            text-align: right;
+            font-size: 8pt;
+            color: #6b7280;
+        }
+
+        h1 {
+            font-size: 14pt;
+            margin-bottom: 8px;
+            color: #111827;
+        }
+
+        h2 {
+            font-size: 11pt;
+            margin-top: 16px;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #e5e7eb;
+            color: #374151;
+        }
+
+        .executive-summary {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .risk-score-container {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+
+        .risk-score {
+            font-size: 36pt;
+            font-weight: 800;
+            color: {{ tier_color }};
+            line-height: 1;
+        }
+
+        .risk-tier {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 11pt;
+            color: white;
+            background: {{ tier_color }};
+        }
+
+        .risk-description {
+            font-size: 10pt;
+            color: #4b5563;
+            margin-top: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+            font-size: 9pt;
+        }
+
+        th, td {
+            padding: 6px 8px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            background: #f3f4f6;
+            font-weight: 600;
+            color: #374151;
+            font-size: 8pt;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .severity-critical { color: #ef4444; font-weight: 700; }
+        .severity-high { color: #f97316; font-weight: 700; }
+        .severity-medium { color: #eab308; font-weight: 700; }
+        .severity-low { color: #22c55e; font-weight: 700; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .stat-box {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            padding: 8px 12px;
+        }
+
+        .stat-label {
+            font-size: 7pt;
+            text-transform: uppercase;
+            color: #6b7280;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 12pt;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .address {
+            font-family: 'Courier New', monospace;
+            font-size: 9pt;
+            word-break: break-all;
+        }
+
+        .badge-sanctioned {
+            background: #fef2f2;
+            color: #dc2626;
+            padding: 1px 6px;
+            border-radius: 3px;
+            font-size: 7pt;
+            font-weight: 600;
+        }
+
+        .badge-mixer {
+            background: #fff7ed;
+            color: #ea580c;
+            padding: 1px 6px;
+            border-radius: 3px;
+            font-size: 7pt;
+            font-weight: 600;
+        }
+
+        .methodology {
+            font-size: 8pt;
+            color: #6b7280;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 12px;
+            margin-top: 16px;
+        }
+
+        .disclaimer {
+            font-size: 7pt;
+            color: #9ca3af;
+            margin-top: 8px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-logo">Sentinel<span>Scanner</span></div>
+        <div class="header-meta">
+            Report ID: {{ scan.scan_id[:8] }}<br>
+            Generated: {{ generated_at }}
+        </div>
+    </div>
+
+    <!-- Section 1: Executive Summary -->
+    <div class="executive-summary">
+        <div class="risk-score-container">
+            <div class="risk-score">{{ scan.risk_score }}</div>
+            <div>
+                <div class="risk-tier">{{ scan.risk_tier }}</div>
+                <div class="risk-description">
+                    {% if scan.risk_tier == 'CRITICAL' %}
+                    Severe risk indicators. Potential sanctions exposure or mixer usage. Immediate action advised.
+                    {% elif scan.risk_tier == 'HIGH' %}
+                    Multiple risk indicators present. Investigation recommended.
+                    {% elif scan.risk_tier == 'MEDIUM' %}
+                    Some risk indicators detected. Enhanced due diligence recommended.
+                    {% else %}
+                    No significant risk indicators detected.
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div style="font-size: 9pt; color: #6b7280;">
+            Address: <span class="address">{{ scan.address }}</span>
+            &nbsp;|&nbsp; Chain: {{ scan.chain | capitalize }}
+        </div>
+    </div>
+
+    <!-- Section 2: Risk Flags -->
+    {% if scan.flags %}
+    <h2>Risk Flags</h2>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 60px;">ID</th>
+                <th style="width: 80px;">Severity</th>
+                <th>Flag</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for flag in scan.flags %}
+            <tr>
+                <td>{{ flag.id }}</td>
+                <td class="severity-{{ flag.severity | lower }}">{{ flag.severity }}</td>
+                <td><strong>{{ flag.name }}</strong></td>
+                <td>{{ flag.description }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    <!-- Section 3: Wallet Overview -->
+    <h2>Wallet Overview</h2>
+    <div class="stats-grid">
+        <div class="stat-box">
+            <div class="stat-label">Transactions</div>
+            <div class="stat-value">{{ scan.tx_count or 0 }}</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">First Seen</div>
+            <div class="stat-value" style="font-size: 9pt;">{{ (scan.first_seen or 'N/A')[:10] }}</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Last Seen</div>
+            <div class="stat-value" style="font-size: 9pt;">{{ (scan.last_seen or 'N/A')[:10] }}</div>
+        </div>
+    </div>
+
+    <!-- Section 4: Transaction Summary -->
+    <h2>Transaction Summary</h2>
+    <div class="stats-grid">
+        <div class="stat-box">
+            <div class="stat-label">Total Inflow (USD)</div>
+            <div class="stat-value">${{ "{:,.2f}".format(scan.total_inflow_usd or 0) }}</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Total Outflow (USD)</div>
+            <div class="stat-value">${{ "{:,.2f}".format(scan.total_outflow_usd or 0) }}</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Largest Transaction</div>
+            <div class="stat-value">${{ "{:,.2f}".format(scan.largest_tx_usd or 0) }}</div>
+        </div>
+    </div>
+
+    <!-- Section 5: Top Counterparties -->
+    {% if scan.counterparties %}
+    <h2>Top Counterparties</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Address</th>
+                <th>Volume (USD)</th>
+                <th>Txs</th>
+                <th>Risk</th>
+                <th>Label</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cp in scan.counterparties[:10] %}
+            <tr>
+                <td class="address">{{ cp.address[:8] }}...{{ cp.address[-6:] }}</td>
+                <td>${{ "{:,.2f}".format(cp.total_volume_usd or 0) }}</td>
+                <td>{{ cp.tx_count }}</td>
+                <td>
+                    {% if cp.is_sanctioned %}<span class="badge-sanctioned">SANCTIONED</span>{% endif %}
+                    {% if cp.is_mixer %}<span class="badge-mixer">MIXER</span>{% endif %}
+                    {% if not cp.is_sanctioned and not cp.is_mixer %}—{% endif %}
+                </td>
+                <td>{{ cp.label or '—' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    <!-- Section 6: Methodology -->
+    <div class="methodology">
+        <h2 style="border: none; margin-top: 0;">Methodology</h2>
+        <p>
+            This report uses the OFAC SDN (Specially Designated Nationals) list, known mixer/tumbler databases,
+            and on-chain transaction analysis to generate a composite risk score. The scoring engine evaluates
+            five dimensions: direct sanctions matches, first-degree sanctions exposure, mixer interactions,
+            transaction velocity patterns, and new wallet inflow behavior.
+        </p>
+        <p class="disclaimer">
+            Scores are indicative and do not constitute legal advice or regulatory determinations.
+            This report is intended for compliance screening purposes only. Always consult qualified
+            legal counsel for regulatory decisions. © {{ year }} Sentinel Scanner.
+        </p>
+    </div>
+</body>
+</html>
