@@ -255,8 +255,17 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
-          <h1 className="text-3xl sm:text-4xl font-light tracking-[-0.02em] leading-tight text-white font-heading">
-            Compliance Dashboard
+          <h1 className="text-3xl sm:text-4xl font-light tracking-[-0.02em] leading-tight text-white font-heading flex items-center gap-3">
+            {typeof window !== "undefined" && localStorage.getItem("sentinel_user_avatar") && (
+              <img 
+                src={localStorage.getItem("sentinel_user_avatar") || ""} 
+                alt="User Logo" 
+                className="h-9 w-9 rounded-full object-cover border border-white/10" 
+              />
+            )}
+            <span>
+              Welcome back, {(typeof window !== "undefined" && localStorage.getItem("sentinel_user_name")) || user.email.split("@")[0]}
+            </span>
           </h1>
           <p className="text-white/55 text-sm font-semibold mt-1">
             Active Workspace: <span className="text-white/80 font-mono tracking-wider">{user.email}</span>

@@ -62,8 +62,18 @@ export function Navbar() {
             {user ? (
               <div className="flex items-center gap-4">
                 <div className="hidden sm:flex items-center gap-2 text-xs font-semibold text-white/55 bg-liquid-800 px-3 py-1.5 rounded-full border border-white/[0.06] font-mono">
-                  <UserIcon className="h-3.5 w-3.5" />
-                  <span className="truncate max-w-[150px]">{user.email}</span>
+                  {typeof window !== "undefined" && localStorage.getItem("sentinel_user_avatar") ? (
+                    <img 
+                      src={localStorage.getItem("sentinel_user_avatar") || ""} 
+                      alt="User Logo" 
+                      className="h-5 w-5 rounded-full object-cover border border-white/10" 
+                    />
+                  ) : (
+                    <UserIcon className="h-3.5 w-3.5 text-[#00e5a0]" />
+                  )}
+                  <span className="truncate max-w-[150px]">
+                    {(typeof window !== "undefined" && localStorage.getItem("sentinel_user_name")) || user.email}
+                  </span>
                 </div>
                 <Button variant="ghost" className="rounded-xl font-bold text-red-400 hover:text-red-300 hover:bg-red-500/10" onClick={handleLogout}>
                   <LogOut className="h-4 w-4 sm:mr-2" />

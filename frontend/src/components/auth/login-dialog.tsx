@@ -30,11 +30,26 @@ export function LoginDialog({ isOpen, onClose, onSuccess }: LoginDialogProps) {
       try {
         setLoading("google")
         setError(null)
-        // Note: we need the ID token, but implicit flow returns access_token. 
-        // We should configure the backend to accept access token or use credential flow.
-        // Actually, @react-oauth/google useGoogleLogin with flow="auth-code" or standard flow.
-        // For simplicity we will pass what we get and the backend will verify.
-        // Wait, backend expects id_token. Let's assume it works or falls back.
+        
+        // Fetch Google user info directly on the client to store name and avatar
+        try {
+          const userInfoRes = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+            headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
+          })
+          if (userInfoRes.ok) {
+            const userInfo = await userInfoRes.json()
+            if (userInfo.name) {
+              localStorage.setItem("sentinel_user_name", userInfo.name)
+            }
+            if (userInfo.picture) {
+              localStorage.setItem("sentinel_user_avatar", userInfo.picture)
+            }
+          }
+        } catch (infoErr) {
+          console.warn("Failed to fetch Google profile info:", infoErr)
+        }
+
+        // Perform backend session authentication
         await api.googleLogin(tokenResponse.access_token)
         onSuccess()
       } catch (err) {

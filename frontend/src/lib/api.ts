@@ -128,6 +128,8 @@ class ApiClient {
 
   logout() {
     localStorage.removeItem("sentinel_token")
+    localStorage.removeItem("sentinel_user_name")
+    localStorage.removeItem("sentinel_user_avatar")
     window.location.reload()
   }
 }
