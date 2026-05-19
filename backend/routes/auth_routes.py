@@ -55,6 +55,12 @@ async def register(request: Request, body: RegisterRequest) -> TokenResponse:
         await db.commit()
 
         user_id = cursor.lastrowid
+        if user_id is None:
+            # Fallback to query database for user ID by email in case of DB driver edge cases (e.g. Postgres lastrowid)
+            cursor = await db.execute("SELECT id FROM users WHERE email = ?", (body.email,))
+            user_row = await cursor.fetchone()
+            if user_row:
+                user_id = user_row[0]
         token = create_access_token(user_id, body.email)
 
         return TokenResponse(
@@ -168,70 +174,84 @@ async def verify_google_token(token: str) -> Optional[dict]:
 @limiter.limit("5/minute")
 async def google_login(request: Request, body: GoogleLoginRequest) -> TokenResponse:
     """Authenticate a user using a Google ID Token (OAuth 2.0)."""
-    payload = await verify_google_token(body.id_token)
-    if not payload:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or expired Google ID Token.",
-        )
-
-    email = payload.get("email").lower()
-    settings = get_settings()
-    db = await get_db()
-
     try:
-        # Check if user exists
-        cursor = await db.execute(
-            "SELECT id, email, tier, scans_used_this_month, scans_limit, month_reset FROM users WHERE email = ?",
-            (email,)
-        )
-        row = await cursor.fetchone()
+        payload = await verify_google_token(body.id_token)
+        if not payload:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid or expired Google ID Token.",
+            )
 
-        if row:
-            user_id = row[0]
-            tier = row[2]
-            scans_used = row[3]
-            scans_limit = row[4]
-            month_reset = row[5] or ""
-        else:
-            # Create a new Google SSO user
-            current_month = datetime.now(timezone.utc).strftime("%Y-%m")
+        email = payload.get("email").lower()
+        settings = get_settings()
+        db = await get_db()
+
+        try:
+            # Check if user exists
             cursor = await db.execute(
-                """INSERT INTO users (email, password_hash, tier, scans_used_this_month, scans_limit, month_reset)
-                   VALUES (?, '', 'free', 0, ?, ?)""",
-                (email, settings.free_scan_limit, current_month)
+                "SELECT id, email, tier, scans_used_this_month, scans_limit, month_reset FROM users WHERE email = ?",
+                (email,)
             )
-            await db.commit()
-            user_id = cursor.lastrowid
-            tier = "free"
-            scans_used = 0
-            scans_limit = settings.free_scan_limit
-            month_reset = current_month
+            row = await cursor.fetchone()
 
-        # Reset scans if new month
-        current_month = datetime.now(timezone.utc).strftime("%Y-%m")
-        if month_reset != current_month:
-            await db.execute(
-                "UPDATE users SET scans_used_this_month = 0, month_reset = ? WHERE id = ?",
-                (current_month, user_id),
+            if row:
+                user_id = row[0]
+                tier = row[2] or "free"
+                scans_used = row[3] if row[3] is not None else 0
+                scans_limit = row[4] if row[4] is not None else settings.free_scan_limit
+                month_reset = row[5] or ""
+            else:
+                # Create a new Google SSO user
+                current_month = datetime.now(timezone.utc).strftime("%Y-%m")
+                cursor = await db.execute(
+                    """INSERT INTO users (email, password_hash, tier, scans_used_this_month, scans_limit, month_reset)
+                       VALUES (?, '', 'free', 0, ?, ?)""",
+                    (email, settings.free_scan_limit, current_month)
+                )
+                await db.commit()
+                user_id = cursor.lastrowid
+                if user_id is None:
+                    # Fallback to query database for user ID by email in case of DB driver edge cases (e.g. Postgres lastrowid)
+                    cursor = await db.execute("SELECT id FROM users WHERE email = ?", (email,))
+                    user_row = await cursor.fetchone()
+                    if user_row:
+                        user_id = user_row[0]
+                tier = "free"
+                scans_used = 0
+                scans_limit = settings.free_scan_limit
+                month_reset = current_month
+
+            # Reset scans if new month
+            current_month = datetime.now(timezone.utc).strftime("%Y-%m")
+            if month_reset != current_month:
+                await db.execute(
+                    "UPDATE users SET scans_used_this_month = 0, month_reset = ? WHERE id = ?",
+                    (current_month, user_id),
+                )
+                await db.commit()
+                scans_used = 0
+
+            token = create_access_token(user_id, email)
+            return TokenResponse(
+                user=UserResponse(
+                    id=user_id,
+                    email=email,
+                    tier=tier,
+                    scans_used_this_month=scans_used,
+                    scans_limit=scans_limit,
+                    scans_remaining=max(0, scans_limit - scans_used),
+                ),
+                token=token,
             )
-            await db.commit()
-            scans_used = 0
-
-        token = create_access_token(user_id, email)
-        return TokenResponse(
-            user=UserResponse(
-                id=user_id,
-                email=email,
-                tier=tier,
-                scans_used_this_month=scans_used,
-                scans_limit=scans_limit,
-                scans_remaining=max(0, scans_limit - scans_used),
-            ),
-            token=token,
+        finally:
+            await db.close()
+    except Exception as e:
+        import traceback
+        logger.exception("Google login failed")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Google login failed internally: {str(e)}\nTraceback: {traceback.format_exc()}"
         )
-    finally:
-        await db.close()
 
 
 # --------------------------------------------------------------------------- #
@@ -318,6 +338,12 @@ async def metamask_login(request: Request, body: MetaMaskLoginRequest) -> TokenR
             )
             await db.commit()
             user_id = cursor.lastrowid
+            if user_id is None:
+                # Fallback to query database for user ID by email in case of DB driver edge cases (e.g. Postgres lastrowid)
+                cursor = await db.execute("SELECT id FROM users WHERE email = ?", (email,))
+                user_row = await cursor.fetchone()
+                if user_row:
+                    user_id = user_row[0]
             tier = "free"
             scans_used = 0
             scans_limit = settings.free_scan_limit

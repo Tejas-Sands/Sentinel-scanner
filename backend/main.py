@@ -76,11 +76,11 @@ async def set_secure_headers(request: Request, call_next):
     return response
 
 # --- HTTPS Redirect Middleware ---
-settings = get_settings()
-if not settings.is_development:
-    app.add_middleware(HTTPSRedirectMiddleware)
+# Disabled because Hugging Face terminates SSL at the reverse proxy level.
+# Enabling this causes an infinite loop (ERR_TOO_MANY_REDIRECTS).
 
 # --- CORS ---
+settings = get_settings()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
