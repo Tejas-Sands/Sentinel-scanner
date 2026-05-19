@@ -2,7 +2,7 @@ import { ScannerInterface } from "@/components/scanner/scanner-interface"
 
 export default function ScanPage() {
   return (
-    <div className="flex flex-col min-h-[calc(100vh-4rem)] bg-void relative overflow-hidden">
+    <div className="flex flex-col min-h-[calc(100vh-4rem)] bg-void relative overflow-hidden" data-page="scan">
       
       {/* Monastic ambient breathing orb (15s cycle) */}
       <div 

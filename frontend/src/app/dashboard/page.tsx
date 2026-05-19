@@ -80,7 +80,7 @@ export default function DashboardPage() {
   // --- 1. UNAUTHENTICATED / EMPTY STATE ---
   if (!user) {
     return (
-      <div className="relative min-h-[calc(100vh-5rem)] py-16 px-6 overflow-hidden flex flex-col justify-center bg-void">
+      <div className="relative min-h-[calc(100vh-5rem)] py-16 px-6 overflow-hidden flex flex-col justify-center bg-void" data-page="dashboard">
         {/* Background breathing orb decoration */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 h-[500px] w-[500px] bg-accent/[0.03] blur-[120px] rounded-full pointer-events-none" />
 
@@ -234,7 +234,7 @@ export default function DashboardPage() {
 
   // --- 2. AUTHENTICATED STATE (REAL USER DATA) ---
   return (
-    <div className="py-16 px-6 max-w-7xl mx-auto space-y-12 bg-void">
+    <div className="py-16 px-6 max-w-7xl mx-auto space-y-12 bg-void" data-page="dashboard">
       
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">

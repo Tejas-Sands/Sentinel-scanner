@@ -28,7 +28,8 @@ export function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-white/[0.04] bg-void/60 backdrop-blur-xl transition-all duration-300">
+      <header className="fixed top-0 left-0 right-0 z-40 w-full border-b border-white/[0.08] bg-void/60 backdrop-blur-xl transition-all duration-300">
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
         <div className="container flex h-20 max-w-7xl mx-auto items-center justify-between px-6">
           <Link href="/" className="flex items-center space-x-3 group">
             <div className="h-10 w-10 rounded-xl bg-[#00e5a0] flex items-center justify-center shadow-lg shadow-[#00e5a0]/15 group-hover:scale-110 transition-transform duration-300">

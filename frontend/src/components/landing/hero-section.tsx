@@ -42,7 +42,8 @@ export function HeroSection() {
   return (
     <section 
       ref={containerRef} 
-      className="relative min-h-[100vh] flex items-center justify-center overflow-hidden bg-void"
+      className="relative isolate min-h-[100vh] flex items-center justify-center overflow-hidden bg-void"
+      data-page="landing"
     >
       {/* 1. MASKED RADIAL FADING GRID */}
       <div

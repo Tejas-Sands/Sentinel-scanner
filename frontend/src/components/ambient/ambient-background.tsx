@@ -45,23 +45,6 @@ function useGlobalCursor() {
   }, []);
 }
 
-// ═══════════════════════════════════════════════════════════════════
-//  LAYER 1 — Breathing Viewport Border (-30)
-// ═══════════════════════════════════════════════════════════════════
-
-function BreathingBorder() {
-  return (
-    <div
-      className="fixed inset-[1px] pointer-events-none rounded-none"
-      aria-hidden="true"
-      style={{
-        zIndex: 99,
-        border: "1px solid rgba(255,255,255,0.06)",
-        animation: "breatheBorder 12s ease-in-out infinite",
-      }}
-    />
-  );
-}
 
 // ═══════════════════════════════════════════════════════════════════
 //  LAYER 2 — Scan Pulse Ripple (-25)
@@ -653,7 +636,6 @@ export default function AmbientBackground() {
 
   return (
     <>
-      <BreathingBorder />
       <ScanPulseRipple />
       <HashRainSide side="left" />
       <HashRainSide side="right" />
