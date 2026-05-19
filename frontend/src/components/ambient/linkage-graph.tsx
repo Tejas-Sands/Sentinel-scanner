@@ -29,11 +29,11 @@ interface Node {
   driftRadius: number;
 }
 
-const NODE_COUNT = 65;
-const LINK_DISTANCE = 220;
-const NODE_MIN_RADIUS = 2;
-const NODE_MAX_RADIUS = 4.5;
-const MOUSE_REACTION_RADIUS = 220;
+const NODE_COUNT = 75;
+const LINK_DISTANCE = 240;
+const NODE_MIN_RADIUS = 2.5;
+const NODE_MAX_RADIUS = 5;
+const MOUSE_REACTION_RADIUS = 280;
 
 function createNodes(w: number, h: number): Node[] {
   const nodes: Node[] = [];
@@ -121,14 +121,14 @@ export default function LinkageGraph() {
           if (dist < MOUSE_REACTION_RADIUS) {
             // Stronger pull when closer
             const force = (MOUSE_REACTION_RADIUS - dist) / MOUSE_REACTION_RADIUS;
-            node.vx += (dx / dist) * force * 0.4;
-            node.vy += (dy / dist) * force * 0.4;
+            node.vx += (dx / dist) * force * 0.85;
+            node.vy += (dy / dist) * force * 0.85;
           }
         }
 
         // Apply velocities with damping (friction)
-        node.vx *= 0.92;
-        node.vy *= 0.92;
+        node.vx *= 0.90;
+        node.vy *= 0.90;
 
         // Combine drift + physics velocity
         node.x = targetX + node.vx;
@@ -143,19 +143,26 @@ export default function LinkageGraph() {
           const dist = Math.sqrt(dx * dx + dy * dy);
 
           if (dist < LINK_DISTANCE) {
-            const alpha = (1 - dist / LINK_DISTANCE) * 0.12 * breathe;
+            const alpha = (1 - dist / LINK_DISTANCE) * 0.18 * breathe;
             ctx.beginPath();
             ctx.moveTo(nodes[i].x, nodes[i].y);
             ctx.lineTo(nodes[j].x, nodes[j].y);
 
-            // Red-to-Red connections get a warm tint, others get clean white/accent
-            if (nodes[i].color === "#ef4444" && nodes[j].color === "#ef4444") {
-              ctx.strokeStyle = `rgba(239, 68, 68, ${alpha * 1.5})`;
+            // Glowing red-to-green gradient connecting different risk states
+            if (nodes[i].color !== nodes[j].color) {
+              const grad = ctx.createLinearGradient(nodes[i].x, nodes[i].y, nodes[j].x, nodes[j].y);
+              grad.addColorStop(0, nodes[i].color === "#ef4444" ? `rgba(239, 68, 68, ${alpha * 2.0})` : `rgba(34, 197, 94, ${alpha * 2.0})`);
+              grad.addColorStop(1, nodes[j].color === "#ef4444" ? `rgba(239, 68, 68, ${alpha * 2.0})` : `rgba(34, 197, 94, ${alpha * 2.0})`);
+              ctx.strokeStyle = grad;
+              ctx.lineWidth = 1.0;
+            } else if (nodes[i].color === "#ef4444") {
+              ctx.strokeStyle = `rgba(239, 68, 68, ${alpha * 1.6})`;
+              ctx.lineWidth = 0.75;
             } else {
-              ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+              ctx.strokeStyle = `rgba(34, 197, 94, ${alpha * 1.4})`;
+              ctx.lineWidth = 0.75;
             }
             
-            ctx.lineWidth = 0.5;
             ctx.stroke();
           }
         }
@@ -169,14 +176,14 @@ export default function LinkageGraph() {
           const dist = Math.sqrt(dx * dx + dy * dy);
 
           if (dist < MOUSE_REACTION_RADIUS) {
-            const alpha = (1 - dist / MOUSE_REACTION_RADIUS) * 0.18 * breathe;
+            const alpha = (1 - dist / MOUSE_REACTION_RADIUS) * 0.35 * breathe;
             
             ctx.beginPath();
             ctx.moveTo(mouse.x, mouse.y);
             ctx.lineTo(node.x, node.y);
             // Interactive glow connections draw in Mint Green accent
             ctx.strokeStyle = `rgba(0, 229, 160, ${alpha})`;
-            ctx.lineWidth = 0.75;
+            ctx.lineWidth = 1.0;
             ctx.stroke();
           }
         }
