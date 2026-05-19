@@ -26,6 +26,21 @@ module.exports = {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        void: "#020202",
+        liquid: {
+          900: "#09090b",
+          800: "#111113",
+          700: "#1a1a1d",
+        },
+        edge: {
+          subtle: "rgba(255, 255, 255, 0.06)",
+          glow: "rgba(255, 255, 255, 0.12)",
+        },
+        accent: {
+          DEFAULT: "#00e5a0",
+          dim: "rgba(0, 229, 160, 0.15)",
+          glow: "rgba(0, 229, 160, 0.4)",
+        },
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -42,10 +57,6 @@ module.exports = {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",
         },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
-        },
         popover: {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
@@ -59,6 +70,16 @@ module.exports = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      boxShadow: {
+        card: "0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.03)",
+        "card-hover": "0 16px 48px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.12)",
+        "button-primary-hover": "0 0 20px rgba(0, 229, 160, 0.3)",
+      },
+      transitionTimingFunction: {
+        "liquid-out": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "liquid-in-out": "cubic-bezier(0.65, 0, 0.35, 1)",
+        snap: "cubic-bezier(0.16, 1, 0.3, 1)",
       },
       keyframes: {
         "accordion-down": {

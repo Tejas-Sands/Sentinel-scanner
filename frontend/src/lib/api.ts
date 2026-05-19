@@ -75,6 +75,18 @@ class ApiClient {
     return res.json()
   }
 
+  async getUserScans(limit = 20, offset = 0): Promise<{ scans: any[]; total: number }> {
+    const res = await fetch(`${API_URL}/user/scans?limit=${limit}&offset=${offset}`, {
+      headers: this.getHeaders(),
+    })
+    
+    if (!res.ok) {
+      throw new Error("Failed to fetch user scans")
+    }
+    
+    return res.json()
+  }
+
   // --- Auth Methods ---
 
   async googleLogin(idToken: string): Promise<{ token: string; user: User }> {
