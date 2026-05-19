@@ -22,12 +22,10 @@ _CACHE_TTL = 600  # 10 minutes
 async def get_address_stats(address: str) -> Optional[Dict[str, Any]]:
     """
     Fetch address stats from Blockchair (balance, tx count, first/last seen).
-    Only active if blockchair_api_key is configured.
+    Attempts a keyless query if blockchair_api_key is not configured, falling back gracefully on rate limits.
     """
     settings = get_settings()
-    if not settings.blockchair_api_key:
-        return None
-
+    
     cache_key = address.lower()
     if cache_key in _cache:
         data, ts = _cache[cache_key]
@@ -37,9 +35,11 @@ async def get_address_stats(address: str) -> Optional[Dict[str, Any]]:
     async with _semaphore:
         try:
             url = f"https://api.blockchair.com/ethereum/dashboards/address/{address}"
-            params = {"key": settings.blockchair_api_key}
+            params = {}
+            if settings.blockchair_api_key:
+                params["key"] = settings.blockchair_api_key
 
-            async with httpx.AsyncClient(timeout=10.0) as client:
+            async with httpx.AsyncClient(timeout=5.0) as client:
                 resp = await client.get(url, params=params)
                 if resp.status_code == 200:
                     data = resp.json()
@@ -58,11 +58,11 @@ async def get_address_stats(address: str) -> Optional[Dict[str, Any]]:
                     _cache[cache_key] = (result, time.time())
                     return result
                 elif resp.status_code in (402, 429, 430):
-                    logger.warning("Blockchair rate limit hit (HTTP %d)", resp.status_code)
+                    logger.warning("Blockchair rate limit hit or blocked (HTTP %d). Bypassing gracefully...", resp.status_code)
                 else:
                     logger.debug("Blockchair HTTP %d for %s", resp.status_code, address[:10])
 
         except Exception as e:
-            logger.debug("Blockchair request failed: %s", e)
+            logger.debug("Blockchair keyless/api request failed gracefully: %s", e)
 
     return None

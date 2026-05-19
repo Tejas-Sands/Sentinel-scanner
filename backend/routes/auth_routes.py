@@ -6,11 +6,12 @@ from typing import Optional
 
 import httpx
 from jose import jwt
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Request
 
 from auth import create_access_token, hash_password, verify_password
 from config import get_settings
 from database import get_db
+from limiter import limiter
 from models import (
     LoginRequest,
     RegisterRequest,
@@ -26,7 +27,8 @@ router = APIRouter(prefix="/auth")
 
 
 @router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
-async def register(body: RegisterRequest) -> TokenResponse:
+@limiter.limit("5/minute")
+async def register(request: Request, body: RegisterRequest) -> TokenResponse:
     """Register a new user account."""
     settings = get_settings()
     db = await get_db()
@@ -71,7 +73,8 @@ async def register(body: RegisterRequest) -> TokenResponse:
 
 
 @router.post("/login", response_model=TokenResponse)
-async def login(body: LoginRequest) -> TokenResponse:
+@limiter.limit("5/minute")
+async def login(request: Request, body: LoginRequest) -> TokenResponse:
     """Authenticate a user and return a JWT token."""
     db = await get_db()
     try:
@@ -154,7 +157,8 @@ async def verify_google_token(id_token: str) -> Optional[dict]:
 
 
 @router.post("/google", response_model=TokenResponse)
-async def google_login(body: GoogleLoginRequest) -> TokenResponse:
+@limiter.limit("5/minute")
+async def google_login(request: Request, body: GoogleLoginRequest) -> TokenResponse:
     """Authenticate a user using a Google ID Token (OAuth 2.0)."""
     payload = await verify_google_token(body.id_token)
     if not payload:
@@ -227,7 +231,8 @@ async def google_login(body: GoogleLoginRequest) -> TokenResponse:
 # --------------------------------------------------------------------------- #
 
 @router.post("/metamask/nonce")
-async def metamask_nonce(body: MetaMaskNonceRequest) -> dict:
+@limiter.limit("5/minute")
+async def metamask_nonce(request: Request, body: MetaMaskNonceRequest) -> dict:
     """Generate a random cryptographic sign-in nonce for a MetaMask wallet."""
     import uuid
     from services.cache_manager import set_cache
@@ -243,7 +248,8 @@ async def metamask_nonce(body: MetaMaskNonceRequest) -> dict:
 
 
 @router.post("/metamask/login", response_model=TokenResponse)
-async def metamask_login(body: MetaMaskLoginRequest) -> TokenResponse:
+@limiter.limit("5/minute")
+async def metamask_login(request: Request, body: MetaMaskLoginRequest) -> TokenResponse:
     """Authenticate a MetaMask wallet using a Web3 cryptographic signature."""
     from services.cache_manager import get_cache
     from eth_account.messages import encode_defunct

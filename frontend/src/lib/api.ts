@@ -74,6 +74,47 @@ class ApiClient {
     
     return res.json()
   }
+
+  // --- Auth Methods ---
+
+  async googleLogin(idToken: string): Promise<{ token: string; user: User }> {
+    const res = await fetch(`${API_URL}/auth/google`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id_token: idToken }),
+    })
+    if (!res.ok) throw new Error("Google login failed")
+    const data = await res.json()
+    localStorage.setItem("sentinel_token", data.token)
+    return data
+  }
+
+  async getMetamaskNonce(address: string): Promise<{ address: string; message: string }> {
+    const res = await fetch(`${API_URL}/auth/metamask/nonce`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ address }),
+    })
+    if (!res.ok) throw new Error("Failed to get nonce")
+    return res.json()
+  }
+
+  async metamaskLogin(address: string, signature: string): Promise<{ token: string; user: User }> {
+    const res = await fetch(`${API_URL}/auth/metamask/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ address, signature }),
+    })
+    if (!res.ok) throw new Error("Metamask login failed")
+    const data = await res.json()
+    localStorage.setItem("sentinel_token", data.token)
+    return data
+  }
+
+  logout() {
+    localStorage.removeItem("sentinel_token")
+    window.location.reload()
+  }
 }
 
 export const api = new ApiClient()

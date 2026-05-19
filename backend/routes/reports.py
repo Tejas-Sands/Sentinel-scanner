@@ -36,12 +36,12 @@ async def generate_report(
             """SELECT scan_id, address, chain, risk_score, risk_tier, flags,
                       tx_count, first_seen, last_seen, total_inflow_usd,
                       total_outflow_usd, largest_tx_usd, labels, counterparties
-               FROM scans WHERE scan_id = ?""",
-            (body.scan_id,),
+               FROM scans WHERE scan_id = ? AND user_id = ?""",
+            (body.scan_id, user_id),
         )
         scan = await cursor.fetchone()
         if not scan:
-            raise HTTPException(status_code=404, detail="Scan not found")
+            raise HTTPException(status_code=404, detail="Scan not found or you do not have permission to view it")
 
         # Get user tier for watermark
         cursor = await db.execute("SELECT tier FROM users WHERE id = ?", (user_id,))
@@ -102,18 +102,24 @@ async def generate_report(
 
 
 @router.get("/{report_id}/download")
-async def download_report(report_id: str) -> FileResponse:
+async def download_report(
+    report_id: str,
+    user_id: int = Depends(require_auth),
+) -> FileResponse:
     """Download a generated PDF report."""
     db = await get_db()
     try:
         cursor = await db.execute(
-            "SELECT file_path, status FROM reports WHERE report_id = ?",
-            (report_id,),
+            """SELECT r.file_path, r.status 
+               FROM reports r 
+               JOIN scans s ON r.scan_id = s.scan_id 
+               WHERE r.report_id = ? AND s.user_id = ?""",
+            (report_id, user_id),
         )
         row = await cursor.fetchone()
 
         if not row:
-            raise HTTPException(status_code=404, detail="Report not found")
+            raise HTTPException(status_code=404, detail="Report not found or you do not have permission to view it")
 
         if row[1] != "ready":
             raise HTTPException(status_code=202, detail="Report is still processing")

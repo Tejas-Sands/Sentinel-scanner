@@ -4,12 +4,22 @@ import logging
 import sys
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+from secure import Secure
 
 from config import get_settings
 from database import init_db
 from services.ofac import load_sanctions_set, load_mixer_set
+
+from limiter import limiter
+
+# Initialize Secure Headers
+secure_headers = Secure.with_default_headers()
 
 # Configure logging
 logging.basicConfig(
@@ -54,8 +64,23 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# --- CORS ---
+# --- Rate Limiter ---
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+# --- Security Headers Middleware ---
+@app.middleware("http")
+async def set_secure_headers(request: Request, call_next):
+    response = await call_next(request)
+    secure_headers.set_headers(response)
+    return response
+
+# --- HTTPS Redirect Middleware ---
 settings = get_settings()
+if not settings.is_development:
+    app.add_middleware(HTTPSRedirectMiddleware)
+
+# --- CORS ---
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
