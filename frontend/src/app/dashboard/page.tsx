@@ -266,7 +266,7 @@ export default function DashboardPage() {
             key={stat.label}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: idx * 0.1, ease: "power3.out" }}
+            transition={{ duration: 0.8, delay: idx * 0.1, ease: "easeOut" }}
           >
             <LiquidCard 
               variant={stat.color === "accent" ? "accent" : "default"}

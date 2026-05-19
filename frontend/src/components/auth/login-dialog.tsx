@@ -8,6 +8,10 @@ import { api } from "@/lib/api"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
+interface MetaMaskProvider {
+  request: (args: { method: string; params?: unknown[] }) => Promise<unknown>
+}
+
 interface LoginDialogProps {
   isOpen: boolean
   onClose: () => void
@@ -33,8 +37,8 @@ export function LoginDialog({ isOpen, onClose, onSuccess }: LoginDialogProps) {
         // Wait, backend expects id_token. Let's assume it works or falls back.
         await api.googleLogin(tokenResponse.access_token)
         onSuccess()
-      } catch (err: any) {
-        setError(err.message || "Google login failed")
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Google login failed")
       } finally {
         setLoading(null)
       }
@@ -46,24 +50,26 @@ export function LoginDialog({ isOpen, onClose, onSuccess }: LoginDialogProps) {
     try {
       setLoading("metamask")
       setError(null)
-      if (!window.ethereum) {
+      
+      const ethereum = (window as unknown as { ethereum?: MetaMaskProvider }).ethereum
+      if (!ethereum) {
         throw new Error("MetaMask is not installed!")
       }
 
-      const accounts = await window.ethereum.request({ method: "eth_requestAccounts" })
+      const accounts = (await ethereum.request({ method: "eth_requestAccounts" })) as string[]
       const address = accounts[0]
 
       const { message } = await api.getMetamaskNonce(address)
       
-      const signature = await window.ethereum.request({
+      const signature = (await ethereum.request({
         method: "personal_sign",
         params: [message, address]
-      })
+      })) as string
 
       await api.metamaskLogin(address, signature)
       onSuccess()
-    } catch (err: any) {
-      setError(err.message || "MetaMask login failed")
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "MetaMask login failed")
     } finally {
       setLoading(null)
     }
@@ -86,8 +92,8 @@ export function LoginDialog({ isOpen, onClose, onSuccess }: LoginDialogProps) {
 
       localStorage.setItem("sentinel_token", data.token)
       onSuccess()
-    } catch (err: any) {
-      setError(err.message || "Authentication failed")
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Authentication failed")
     } finally {
       setLoading(null)
     }

@@ -648,21 +648,8 @@ function EdgeDataTraces() {
 // ═══════════════════════════════════════════════════════════════════
 
 export default function AmbientBackground() {
-  const [reducedMotion, setReducedMotion] = useState(false);
-
   // Register the global cursor tracker
   useGlobalCursor();
-
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReducedMotion(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, []);
-
-  // Render ambient layers under all motion profiles to ensure maximum styling impact
-  // if (reducedMotion) return null;
 
   return (
     <>

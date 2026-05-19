@@ -75,7 +75,7 @@ class ApiClient {
     return res.json()
   }
 
-  async getUserScans(limit = 20, offset = 0): Promise<{ scans: any[]; total: number }> {
+  async getUserScans(limit = 20, offset = 0): Promise<{ scans: ScanResponse[]; total: number }> {
     const res = await fetch(`${API_URL}/user/scans?limit=${limit}&offset=${offset}`, {
       headers: this.getHeaders(),
     })

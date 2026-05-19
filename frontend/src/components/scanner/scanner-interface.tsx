@@ -16,6 +16,17 @@ import { Loader2, Search, Download, Share2, AlertCircle, ShieldCheck, Zap } from
 import { TIER_BG_COLORS } from "@/lib/display"
 import { motion, AnimatePresence } from "framer-motion"
 
+const LOADING_MESSAGES = [
+  "Analyzing transaction history...",
+  "Consulting OFAC SDN database...",
+  "Auditing USDT/USDC blacklists...",
+  "Tracing transaction graph hops...",
+  "NVIDIA NIM reasoning in progress...",
+  "Evaluating behavioral anomalies...",
+  "Generating composite risk index...",
+  "Finalizing compliance report..."
+]
+
 export function ScannerInterface() {
   const [address, setAddress] = useState("")
   const [error, setError] = useState<string | null>(null)
@@ -24,16 +35,6 @@ export function ScannerInterface() {
   const reportMutation = useGenerateReport()
 
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0)
-  const LOADING_MESSAGES = [
-    "Analyzing transaction history...",
-    "Consulting OFAC SDN database...",
-    "Auditing USDT/USDC blacklists...",
-    "Tracing transaction graph hops...",
-    "NVIDIA NIM reasoning in progress...",
-    "Evaluating behavioral anomalies...",
-    "Generating composite risk index...",
-    "Finalizing compliance report..."
-  ]
 
   // Cycle loading messages
   useEffect(() => {
