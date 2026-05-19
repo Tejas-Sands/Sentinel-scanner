@@ -1,7 +1,23 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
+import { motion, useSpring, useTransform } from "framer-motion"
+
+function AnimatedNumber({ value }: { value: string }) {
+  const numValue = parseInt(value.replace(/[^0-9]/g, ""))
+  const hasString = value.match(/[^0-9]/)
+  const animatedValue = useSpring(0, { bounce: 0, duration: 1500 })
+  const displayValue = useTransform(animatedValue, (latest) => Math.round(latest).toString() + (hasString ? value.replace(/[0-9]/g, "") : ""))
+  
+  useEffect(() => {
+    if (!isNaN(numValue)) {
+      animatedValue.set(numValue)
+    }
+  }, [numValue, animatedValue])
+
+  if (isNaN(numValue)) return <>{value}</>
+  return <motion.span>{displayValue}</motion.span>
+}
 import { 
   BarChart3, 
   History, 
@@ -287,7 +303,7 @@ export default function DashboardPage() {
                     </span>
                   </div>
                   <p className="text-2xl font-black font-heading mt-1 font-mono tracking-tight text-white/90 tabular-nums">
-                    {stat.value}
+                    <AnimatedNumber value={stat.value} />
                   </p>
                 </div>
               </div>
@@ -311,7 +327,10 @@ export default function DashboardPage() {
             {scans.length > 0 ? (
               <div className="divide-y divide-white/[0.04]">
                 {scans.map((scan) => (
-                  <div key={scan.scan_id} className="p-6 hover:bg-white/[0.01] transition-colors flex items-center justify-between group">
+                  <div key={scan.scan_id} className={`relative p-6 border-b border-white/[0.04] last:border-0 transition-all flex items-center justify-between group overflow-hidden ${
+                    scan.risk_tier === 'CRITICAL' || scan.risk_tier === 'HIGH' ? 'row-bleed-red' : 
+                    scan.risk_tier === 'MEDIUM' ? 'hover:bg-white/[0.02]' : 'row-bleed-emerald'
+                  }`}>
                     <div className="flex items-center gap-4 min-w-0">
                       <div className={`h-9 w-9 rounded-lg flex items-center justify-center shrink-0 border ${
                         scan.risk_tier === 'CRITICAL' || scan.risk_tier === 'HIGH' ? 'bg-red-500/5 border-red-500/20 text-red-400' : 
@@ -328,11 +347,15 @@ export default function DashboardPage() {
                     </div>
                     
                     <div className="flex items-center gap-4 shrink-0">
-                      <div className="text-right hidden sm:block">
-                        <p className={`text-sm font-black font-mono ${
+                      <div className="text-right hidden sm:block overflow-hidden relative">
+                        <p className={`text-sm font-black font-mono transition-transform duration-300 group-hover:-translate-y-8 ${
                           scan.risk_score > 70 ? 'text-red-400' : scan.risk_score > 30 ? 'text-yellow-400' : 'text-[#00e5a0]'
                         }`}>{scan.risk_score}/100</p>
-                        <p className="text-[9px] font-black uppercase tracking-wider text-white/25 mt-0.5">{scan.risk_tier} RISK</p>
+                        <p className="text-[9px] font-black uppercase tracking-wider text-white/25 mt-0.5 transition-transform duration-300 group-hover:-translate-y-8">{scan.risk_tier} RISK</p>
+                        
+                        <div className="absolute inset-0 flex items-center justify-end translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                          <span className="text-xs font-bold text-white whitespace-nowrap">View Report →</span>
+                        </div>
                       </div>
                       <Link href={`/report/${scan.scan_id}`} className="p-2.5 rounded-lg bg-void border border-white/[0.04] hover:bg-accent hover:border-transparent group-hover:text-[#020202] transition-all">
                         <ExternalLink className="h-4 w-4" />

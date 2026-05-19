@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Shield, Mail, Wallet, X, Loader2 } from "lucide-react"
+import { Mail, Wallet, X, Loader2 } from "lucide-react"
 import { useGoogleLogin } from "@react-oauth/google"
 import { api } from "@/lib/api"
 import { Button } from "@/components/ui/button"
@@ -122,8 +122,8 @@ export function LoginDialog({ isOpen, onClose, onSuccess }: LoginDialogProps) {
               </button>
 
               <div className="flex flex-col items-center mb-8">
-                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
-                  <Shield className="h-6 w-6 text-primary" />
+                <div className="h-16 w-16 flex items-center justify-center mb-4">
+                  <img src="/logo.png" alt="Sentinel Logo" className="h-full w-full object-contain" />
                 </div>
                 <h2 className="text-2xl font-bold font-heading">
                   {isRegister ? "Create an Account" : "Welcome Back"}

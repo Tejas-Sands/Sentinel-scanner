@@ -1,6 +1,5 @@
 "use client"
 
-import { Shield } from "lucide-react"
 import Link from "next/link"
 
 export function Footer() {
@@ -12,8 +11,8 @@ export function Footer() {
           {/* Left segment */}
           <div className="md:col-span-6 space-y-4">
             <div className="flex items-center space-x-3">
-              <div className="h-9 w-9 rounded-lg bg-[#00e5a0] flex items-center justify-center shadow-lg shadow-[#00e5a0]/15">
-                <Shield className="h-5 w-5 text-[#020202] fill-current" />
+              <div className="h-10 w-10 flex items-center justify-center">
+                <img src="/logo.png" alt="Sentinel Logo" className="h-full w-full object-contain" />
               </div>
               <span className="font-extrabold text-lg font-heading tracking-tight text-white">
                 Sentinel<span className="text-[#00e5a0]">Scanner</span>

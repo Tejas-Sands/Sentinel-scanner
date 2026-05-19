@@ -25,17 +25,17 @@ export default function RootLayout({
       <body className={`${inter.className} min-h-screen bg-[#020202] text-white antialiased`}>
         <Providers>
           {/* Layer A: Global Ambient Background */}
-          <div className="fixed inset-0 isolate -z-10">
+          <div className="fixed inset-0 isolate z-[1] pointer-events-none">
             <AmbientBackground />
           </div>
 
           {/* Layer B: Breathing Border Viewport Frame */}
-          <div className="fixed inset-[1px] isolate z-[5] pointer-events-none">
+          <div className="fixed inset-[1px] isolate z-[20] pointer-events-none">
             <BreathingBorder />
           </div>
 
           {/* Layer C, D: Spotlight & Main Application Wrapper */}
-          <div className="relative isolate flex min-h-screen flex-col bg-void">
+          <div className="relative isolate z-[10] flex min-h-screen flex-col bg-transparent">
             <Spotlight />
             <Navbar />
             <main className="flex-1 relative z-10 pt-20">

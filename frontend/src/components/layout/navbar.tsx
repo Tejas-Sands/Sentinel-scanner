@@ -1,6 +1,6 @@
 "use client"
 
-import { Shield, LayoutDashboard, CreditCard, Search, User as UserIcon, LogOut } from "lucide-react"
+import { LayoutDashboard, CreditCard, Search, User as UserIcon, LogOut } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
@@ -32,8 +32,8 @@ export function Navbar() {
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
         <div className="container flex h-20 max-w-7xl mx-auto items-center justify-between px-6">
           <Link href="/" className="flex items-center space-x-3 group">
-            <div className="h-10 w-10 rounded-xl bg-[#00e5a0] flex items-center justify-center shadow-lg shadow-[#00e5a0]/15 group-hover:scale-110 transition-transform duration-300">
-              <Shield className="h-5 w-5 text-[#020202] fill-current" />
+            <div className="h-10 w-10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              <img src="/logo.png" alt="Sentinel Logo" className="h-full w-full object-contain" />
             </div>
             <span className="font-extrabold text-xl font-heading tracking-tighter text-white">
               Sentinel<span className="text-[#00e5a0]">Scanner</span>

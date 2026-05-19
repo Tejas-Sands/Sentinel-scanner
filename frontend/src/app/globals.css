@@ -127,6 +127,19 @@
   ::-webkit-scrollbar-thumb:hover {
     background: #00e5a0;
   }
+
+  .row-bleed-emerald {
+    transition: background 0.3s ease;
+  }
+  .row-bleed-emerald:hover {
+    background: radial-gradient(circle at center, rgba(0, 229, 160, 0.08) 0%, transparent 70%);
+  }
+  .row-bleed-red {
+    transition: background 0.3s ease;
+  }
+  .row-bleed-red:hover {
+    background: radial-gradient(circle at center, rgba(239, 68, 68, 0.08) 0%, transparent 70%);
+  }
 }
 
 /* ═══════════════════════════════════════════════════════

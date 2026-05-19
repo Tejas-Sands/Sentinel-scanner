@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import gsap from "gsap";
+import LinkageGraph from "./linkage-graph";
 
 // ------------------------------------------------------------------
 // AmbientBackground.tsx — Liquid Noir Living Tissue Layer
@@ -87,7 +88,7 @@ function ScanPulseRipple() {
       className="fixed pointer-events-none"
       aria-hidden="true"
       style={{
-        zIndex: -25,
+        zIndex: 1,
         top: "50%",
         left: "50%",
         width: "300px",
@@ -165,7 +166,7 @@ function HashRainSide({ side }: { side: "left" | "right" }) {
     <div
       className={`${posClass} overflow-hidden pointer-events-none`}
       aria-hidden="true"
-      style={{ zIndex: -20 }}
+      style={{ zIndex: 2 }}
     >
       <AnimatePresence>
         {fragments.map((f) => (
@@ -309,7 +310,7 @@ function DepthParticleField({ side }: { side: "left" | "right" }) {
       ref={containerRef}
       className={`${posClass} pointer-events-none`}
       aria-hidden="true"
-      style={{ zIndex: -15 }}
+      style={{ zIndex: 3 }}
     />
   );
 }
@@ -488,7 +489,7 @@ function NetworkNodeCanvas() {
       ref={canvasRef}
       className="fixed inset-0 w-full h-full pointer-events-none"
       aria-hidden="true"
-      style={{ zIndex: -10 }}
+      style={{ zIndex: 4 }}
     />
   );
 }
@@ -621,7 +622,7 @@ function EdgeDataTraces() {
       ref={svgRef}
       className="fixed inset-0 w-full h-full pointer-events-none"
       aria-hidden="true"
-      style={{ zIndex: -5 }}
+      style={{ zIndex: 5 }}
     />
   );
 }
@@ -642,6 +643,7 @@ export default function AmbientBackground() {
       <DepthParticleField side="left" />
       <DepthParticleField side="right" />
       <NetworkNodeCanvas />
+      <LinkageGraph />
       <EdgeDataTraces />
     </>
   );

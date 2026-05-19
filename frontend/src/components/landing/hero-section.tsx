@@ -1,9 +1,10 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { motion } from "framer-motion"
-import { Shield, ArrowRight, Zap, Lock, Eye } from "lucide-react"
+import { Shield, ArrowRight, Lock } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { MagneticWrapper } from "@/components/ui/magnetic-wrapper"
 import Link from "next/link"
 import gsap from "gsap"
 
@@ -11,6 +12,9 @@ export function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null)
   const mintOrbRef = useRef<HTMLDivElement>(null)
   const whiteOrbRef = useRef<HTMLDivElement>(null)
+
+  const [logText, setLogText] = useState("")
+  const [score, setScore] = useState(0)
 
   useEffect(() => {
     // VISCOUS CONTINUOUS LOOPS - GSAP drift pattern for ambient orbs
@@ -36,6 +40,39 @@ export function HeroSection() {
         yoyo: true,
         ease: "sine.inOut",
       })
+    }
+
+    const logs = [
+      "[SYSTEM] Initiating scan sequence...",
+      "[ENS] Resolving 0x742d35...f44e",
+      "[OFAC] Cross-referencing sanctions... CLEARED",
+      "[MIXER] Tracing proximity hops... 0 HOPS",
+      "[NVIDIA] Synthesizing risk profile... READY",
+    ]
+    
+    let i = 0;
+    const interval = setInterval(() => {
+      if (i < logs.length) {
+        setLogText(prev => prev + (prev ? "\n" : "") + logs[i])
+        i++
+      } else {
+        clearInterval(interval)
+      }
+    }, 600)
+
+    let currentScore = 0;
+    const scoreInterval = setInterval(() => {
+      if (currentScore < 12) {
+        currentScore++;
+        setScore(currentScore)
+      } else {
+        clearInterval(scoreInterval)
+      }
+    }, 100)
+
+    return () => {
+      clearInterval(interval)
+      clearInterval(scoreInterval)
     }
   }, [])
 
@@ -85,14 +122,34 @@ export function HeroSection() {
 
           {/* 3. CLAMP DISPLAY TYPOGRAPHY - Gradient text fill */}
           <motion.h1
-            initial={{ opacity: 0, y: 30, filter: "blur(8px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 1.0, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+            initial="hidden"
+            animate="visible"
+            variants={{
+              visible: { transition: { staggerChildren: 0.15, delayChildren: 0.15 } }
+            }}
             className="text-[clamp(2.5rem,7vw,5.5rem)] font-light tracking-[-0.03em] leading-[1.0] max-w-5xl text-wrap-balance"
           >
-            <span className="block text-white/90">On-Chain Risk</span>
-            <span className="block bg-gradient-to-r from-white via-white to-white/60 bg-clip-text text-transparent">
-              Intelligence.
+            <span className="block overflow-hidden relative">
+              <motion.span 
+                variants={{
+                  hidden: { y: "100%", opacity: 0 },
+                  visible: { y: 0, opacity: 1, transition: { duration: 1.0, ease: [0.16, 1, 0.3, 1] } }
+                }}
+                className="block text-white/90"
+              >
+                On-Chain Risk
+              </motion.span>
+            </span>
+            <span className="block overflow-hidden relative">
+              <motion.span 
+                variants={{
+                  hidden: { y: "100%", opacity: 0 },
+                  visible: { y: 0, opacity: 1, transition: { duration: 1.0, ease: [0.16, 1, 0.3, 1] } }
+                }}
+                className="block bg-gradient-to-r from-white via-white to-white/60 bg-clip-text text-transparent"
+              >
+                Intelligence.
+              </motion.span>
             </span>
           </motion.h1>
 
@@ -115,12 +172,14 @@ export function HeroSection() {
             transition={{ duration: 0.8, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
             className="flex flex-col sm:flex-row items-center gap-4 pt-4"
           >
-            <Link href="/scan">
-              <Button size="lg" className="h-12 px-8 font-semibold group rounded-xl shadow-lg hover:shadow-[0_0_20px_rgba(0,229,160,0.35)] transition-all">
-                Start Scanning Free
-                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </Link>
+            <MagneticWrapper>
+              <Link href="/scan">
+                <Button size="lg" className="h-12 px-8 font-semibold group rounded-xl shadow-[0_0_20px_rgba(0,229,160,0.15)] hover:shadow-[0_0_30px_rgba(0,229,160,0.4)] transition-all">
+                  Start Scanning Free
+                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+            </MagneticWrapper>
             <Link href="#features">
               <Button variant="outline" size="lg" className="h-12 px-8 font-semibold rounded-xl">
                 See How It Works
@@ -149,17 +208,15 @@ export function HeroSection() {
                   <p className="font-mono text-sm text-white/50 tracking-wider">0x742d35...f44e</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-4xl font-extrabold text-glow-accent text-accent">12</p>
+                  <p className="text-4xl font-extrabold text-glow-accent text-accent">{score}</p>
                   <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/35 mt-0.5">COMPLIANCE SCORE</p>
                 </div>
               </div>
               
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 gap-4 mb-6">
                 {[
                   { icon: <Shield className="h-4 w-4 text-accent" />, label: "OFAC Blacklist", status: "CLEARED" },
                   { icon: <Lock className="h-4 w-4 text-accent" />, label: "Mixer Proximity", status: "NO HOPS" },
-                  { icon: <Eye className="h-4 w-4 text-accent/80" />, label: "Activity Profile", status: "247 TXNS" },
-                  { icon: <Zap className="h-4 w-4 text-accent/80" />, label: "NVIDIA Intel", status: "READY" },
                 ].map((item) => (
                   <div key={item.label} className="flex items-center gap-3 p-4 rounded-xl bg-void/50 border border-white/[0.04]">
                     <div className="shrink-0">{item.icon}</div>
@@ -169,6 +226,15 @@ export function HeroSection() {
                     </div>
                   </div>
                 ))}
+              </div>
+
+              {/* Live Terminal Log Stream */}
+              <div className="bg-void/80 border border-white/[0.04] rounded-xl p-4 font-mono text-[10px] sm:text-xs text-[#00e5a0]/80 h-[100px] overflow-hidden relative">
+                <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent to-liquid-800/80 z-10" />
+                <pre className="whitespace-pre-wrap flex flex-col justify-end min-h-full">
+                  {logText}
+                  <span className="animate-pulse inline-block w-2 h-3 bg-[#00e5a0]/80 ml-1 align-middle" />
+                </pre>
               </div>
             </div>
           </motion.div>

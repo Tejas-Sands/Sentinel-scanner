@@ -31,20 +31,21 @@ const STEPS = [
 
 export function HowItWorks() {
   const sectionRef = useRef<HTMLDivElement>(null)
-  const lineRef = useRef<HTMLDivElement>(null)
+  const lineRef = useRef<SVGLineElement>(null)
 
   useEffect(() => {
     if (!sectionRef.current) return
     const ctx = gsap.context(() => {
       // 1. GSAP CONNECTING LINE ANIMATION
       if (lineRef.current) {
-        gsap.from(lineRef.current, {
-          scaleX: 0,
-          duration: 1.2,
-          ease: "power3.out",
+        gsap.to(lineRef.current, {
+          strokeDashoffset: 0,
+          ease: "power1.inOut",
           scrollTrigger: {
             trigger: sectionRef.current,
-            start: "top 70%",
+            start: "top 60%",
+            end: "bottom 80%",
+            scrub: 1,
           },
         })
       }
@@ -100,11 +101,20 @@ export function HowItWorks() {
 
         {/* Timeline Steps layout */}
         <div className="relative">
-          {/* 3. Connecting Line (1px dashed white/10) */}
-          <div
-            ref={lineRef}
-            className="hidden lg:block absolute top-[52px] left-[15%] right-[15%] h-px border-t border-dashed border-white/10 origin-left"
-          />
+          {/* 3. Connecting Line (Scroll-Drawn Neon Path) */}
+          <div className="hidden lg:block absolute top-[52px] left-[16%] right-[16%] h-[2px] z-0">
+            <svg width="100%" height="100%" preserveAspectRatio="none">
+              <line
+                ref={lineRef}
+                x1="0" y1="0" x2="100%" y2="0"
+                stroke="#00e5a0"
+                strokeWidth="2"
+                strokeDasharray="1000"
+                strokeDashoffset="1000"
+                style={{ filter: "drop-shadow(0 0 8px rgba(0,229,160,0.6))" }}
+              />
+            </svg>
+          </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 relative z-10">
             {STEPS.map((step) => (
