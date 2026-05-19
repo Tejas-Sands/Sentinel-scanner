@@ -129,31 +129,39 @@ async def login(request: Request, body: LoginRequest) -> TokenResponse:
 #  Google Authentication Route
 # --------------------------------------------------------------------------- #
 
-async def verify_google_token(id_token: str) -> Optional[dict]:
+async def verify_google_token(token: str) -> Optional[dict]:
+    # 1. Try to decode as an ID token (JWT)
     try:
-        # Fetch Google public keys dynamically
         async with httpx.AsyncClient(timeout=5.0) as client:
             resp = await client.get("https://www.googleapis.com/oauth2/v3/certs")
-            if resp.status_code != 200:
-                return None
-            jwks = resp.json()
-
-        # Decode using jose JWT with Google's JWKs
-        payload = jwt.decode(
-            id_token,
-            jwks,
-            algorithms=["RS256"],
-            options={"verify_aud": False}
-        )
-        
-        # Verify issuer
-        if payload.get("iss") not in ["accounts.google.com", "https://accounts.google.com"]:
-            return None
-            
-        return payload
+            if resp.status_code == 200:
+                jwks = resp.json()
+                payload = jwt.decode(
+                    token,
+                    jwks,
+                    algorithms=["RS256"],
+                    options={"verify_aud": False}
+                )
+                if payload.get("iss") in ["accounts.google.com", "https://accounts.google.com"]:
+                    return payload
     except Exception as e:
-        logger.debug("Google token verification failed: %s", e)
-        return None
+        logger.debug("JWT decode failed (might be an access token): %s", e)
+
+    # 2. Fall back to validating as a raw access token via Google userinfo endpoint
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            resp = await client.get(
+                "https://www.googleapis.com/oauth2/v3/userinfo",
+                headers={"Authorization": f"Bearer {token}"}
+            )
+            if resp.status_code == 200:
+                payload = resp.json()
+                if payload.get("email"):
+                    return payload
+    except Exception as e:
+        logger.error("Google userinfo API request failed: %s", e)
+
+    return None
 
 
 @router.post("/google", response_model=TokenResponse)

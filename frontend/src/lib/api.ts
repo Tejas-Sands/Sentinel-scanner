@@ -95,7 +95,10 @@ class ApiClient {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id_token: idToken }),
     })
-    if (!res.ok) throw new Error("Google login failed")
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({}))
+      throw new Error(error.detail?.message || error.detail || "Google login failed")
+    }
     const data = await res.json()
     localStorage.setItem("sentinel_token", data.token)
     return data
