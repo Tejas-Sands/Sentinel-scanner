@@ -30,7 +30,7 @@ export default function RootLayout({
           </div>
 
           {/* Layer B: Breathing Border Viewport Frame */}
-          <div className="fixed inset-[1px] isolate z-[20] pointer-events-none">
+          <div className="fixed inset-[1px] isolate z-[20] pointer-events-none hidden md:block">
             <BreathingBorder />
           </div>
 
@@ -44,7 +44,7 @@ export default function RootLayout({
           </div>
 
           {/* Layer E: Film Grain Noise Overlay */}
-          <div className="fixed inset-0 isolate z-[60] pointer-events-none">
+          <div className="fixed inset-0 isolate z-[60] pointer-events-none mobile-no-noise">
             <NoiseOverlay />
           </div>
         </Providers>

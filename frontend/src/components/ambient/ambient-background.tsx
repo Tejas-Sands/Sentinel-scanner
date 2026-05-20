@@ -29,6 +29,8 @@ const cursor = { x: 0, y: 0, active: false };
 
 function useGlobalCursor() {
   useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 768) return;
+    
     const onMove = (e: PointerEvent) => {
       cursor.x = e.clientX;
       cursor.y = e.clientY;
@@ -632,8 +634,25 @@ function EdgeDataTraces() {
 // ═══════════════════════════════════════════════════════════════════
 
 export default function AmbientBackground() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile, { passive: true });
+    return () => {
+      window.removeEventListener("resize", checkMobile);
+    };
+  }, []);
+
   // Register the global cursor tracker
   useGlobalCursor();
+
+  if (isMobile) {
+    return <div className="mobile-ambient-bg" aria-hidden="true" />;
+  }
 
   return (
     <>

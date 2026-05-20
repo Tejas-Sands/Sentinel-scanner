@@ -15,31 +15,40 @@ export function HeroSection() {
 
   const [logText, setLogText] = useState("")
   const [score, setScore] = useState(0)
+  const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
-    // VISCOUS CONTINUOUS LOOPS - GSAP drift pattern for ambient orbs
-    if (mintOrbRef.current) {
-      gsap.to(mintOrbRef.current, {
-        x: "random(-40, 40)",
-        y: "random(-30, 30)",
-        scale: "random(0.95, 1.05)",
-        duration: "random(8, 12)",
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-      })
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
     }
+    checkMobile()
+    window.addEventListener("resize", checkMobile, { passive: true })
 
-    if (whiteOrbRef.current) {
-      gsap.to(whiteOrbRef.current, {
-        x: "random(-30, 30)",
-        y: "random(-40, 40)",
-        scale: "random(0.9, 1.1)",
-        duration: "random(10, 15)",
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-      })
+    // VISCOUS CONTINUOUS LOOPS - GSAP drift pattern for ambient orbs (Desktop only)
+    if (window.innerWidth >= 768) {
+      if (mintOrbRef.current) {
+        gsap.to(mintOrbRef.current, {
+          x: "random(-40, 40)",
+          y: "random(-30, 30)",
+          scale: "random(0.95, 1.05)",
+          duration: "random(8, 12)",
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+        })
+      }
+
+      if (whiteOrbRef.current) {
+        gsap.to(whiteOrbRef.current, {
+          x: "random(-30, 30)",
+          y: "random(-40, 40)",
+          scale: "random(0.9, 1.1)",
+          duration: "random(10, 15)",
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+        })
+      }
     }
 
     const logs = [
@@ -73,6 +82,7 @@ export function HeroSection() {
     return () => {
       clearInterval(interval)
       clearInterval(scoreInterval)
+      window.removeEventListener("resize", checkMobile)
     }
   }, [])
 
@@ -110,8 +120,8 @@ export function HeroSection() {
           
           {/* Subtle upper badge */}
           <motion.div
-            initial={{ opacity: 0, y: 15, filter: "blur(5px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            initial={isMobile ? { opacity: 0, y: 10 } : { opacity: 0, y: 15, filter: "blur(5px)" }}
+            animate={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, y: 0, filter: "blur(0px)" }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           >
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-liquid-800/80 border border-white/[0.06] text-white/50 text-xs font-semibold tracking-[0.25em] uppercase backdrop-blur-md">
@@ -155,8 +165,8 @@ export function HeroSection() {
 
           {/* airy micro-copy */}
           <motion.p
-            initial={{ opacity: 0, y: 20, filter: "blur(5px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            initial={isMobile ? { opacity: 0, y: 15 } : { opacity: 0, y: 20, filter: "blur(5px)" }}
+            animate={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, y: 0, filter: "blur(0px)" }}
             transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
             className="text-base sm:text-lg text-white/55 max-w-2xl leading-relaxed tracking-wide font-normal text-wrap-pretty"
           >
@@ -167,8 +177,8 @@ export function HeroSection() {
 
           {/* primary CTA + secondary ghost */}
           <motion.div
-            initial={{ opacity: 0, y: 20, filter: "blur(5px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            initial={isMobile ? { opacity: 0, y: 15 } : { opacity: 0, y: 20, filter: "blur(5px)" }}
+            animate={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, y: 0, filter: "blur(0px)" }}
             transition={{ duration: 0.8, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
             className="flex flex-col sm:flex-row items-center gap-4 pt-4"
           >
@@ -189,15 +199,15 @@ export function HeroSection() {
 
           {/* Interactive Mock Scan Preview Card */}
           <motion.div
-            initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 1.2, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            initial={isMobile ? { opacity: 0, y: 20 } : { opacity: 0, y: 40, filter: "blur(10px)" }}
+            animate={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={isMobile ? { duration: 0.8, delay: 0.5, ease: "easeOut" } : { duration: 1.2, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
             className="relative mt-16 w-full max-w-3xl"
           >
             {/* Top Inset light highlight box */}
             <div className="absolute -inset-px rounded-[20px] bg-gradient-to-b from-white/[0.08] to-transparent pointer-events-none" />
             
-            <div className="relative bg-gradient-to-br from-liquid-800/80 to-liquid-900/90 backdrop-blur-[20px] saturate-[140%] border border-white/[0.06] rounded-[20px] p-8 md:p-10 shadow-2xl">
+            <div className="relative bg-gradient-to-br from-liquid-800/80 to-liquid-900/90 backdrop-blur-[20px] saturate-[140%] border border-white/[0.06] rounded-[20px] p-8 md:p-10 shadow-2xl mobile-optimize-backdrop">
               
               <div className="flex items-start justify-between mb-8 border-b border-white/[0.04] pb-6">
                 <div>

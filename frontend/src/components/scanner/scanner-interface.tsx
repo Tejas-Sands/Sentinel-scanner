@@ -30,11 +30,21 @@ const LOADING_MESSAGES = [
 export function ScannerInterface() {
   const [address, setAddress] = useState("")
   const [error, setError] = useState<string | null>(null)
+  const [isMobile, setIsMobile] = useState(false)
   
   const scanMutation = useScan()
   const reportMutation = useGenerateReport()
 
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0)
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    checkMobile()
+    window.addEventListener("resize", checkMobile, { passive: true })
+    return () => window.removeEventListener("resize", checkMobile)
+  }, [])
 
   // Cycle loading messages
   useEffect(() => {
@@ -78,8 +88,8 @@ export function ScannerInterface() {
     <div className="w-full max-w-4xl mx-auto px-4">
       {/* Monastic Hero Section */}
       <motion.div 
-        initial={{ opacity: 0, y: 15, filter: "blur(5px)" }}
-        animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+        initial={isMobile ? { opacity: 0, y: 10 } : { opacity: 0, y: 15, filter: "blur(5px)" }}
+        animate={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, y: 0, filter: "blur(0px)" }}
         transition={{ duration: 0.8 }}
         className="text-center space-y-4 mb-12"
       >
@@ -155,10 +165,10 @@ export function ScannerInterface() {
               {/* ProgressBar Track & Fill */}
               <div className="h-[2px] w-full bg-white/5 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-[#00e5a0] shadow-[0_0_10px_rgba(0,229,160,0.4)]"
+                  className="h-full bg-[#00e5a0] shadow-[0_0_10px_rgba(0,229,160,0.4)] w-full origin-left"
                   style={{
-                    width: `${((loadingMessageIndex + 1) / LOADING_MESSAGES.length) * 100}%`,
-                    transition: "width 0.8s cubic-bezier(0.65, 0, 0.35, 1)"
+                    transform: `scaleX(${((loadingMessageIndex + 1) / LOADING_MESSAGES.length)})`,
+                    transition: "transform 0.8s cubic-bezier(0.65, 0, 0.35, 1)"
                   }}
                 />
               </div>
@@ -173,17 +183,15 @@ export function ScannerInterface() {
         </AnimatePresence>
       </motion.div>
 
-      {/* Results Section */}
-      <AnimatePresence mode="wait">
         {scanMutation.data && (
           <motion.div 
             key={scanMutation.data.scan_id}
-            initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
+            initial={isMobile ? { opacity: 0, y: 20 } : { opacity: 0, y: 40, filter: "blur(10px)" }}
+            animate={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={isMobile ? { duration: 0.6, ease: "easeOut" } : { duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
             className="mt-12"
           >
-            <Card className="bg-gradient-to-br from-liquid-800/80 to-liquid-900/90 backdrop-blur-[20px] saturate-[140%] border border-white/[0.06] overflow-hidden shadow-2xl rounded-[20px]">
+            <Card className="bg-gradient-to-br from-liquid-800/80 to-liquid-900/90 backdrop-blur-[20px] saturate-[140%] border border-white/[0.06] overflow-hidden shadow-2xl rounded-[20px] mobile-optimize-backdrop">
               
               {/* Premium Header */}
               <div className="p-8 md:p-10 border-b border-white/[0.04] bg-white/[0.01]">
