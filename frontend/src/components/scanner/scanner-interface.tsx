@@ -183,6 +183,7 @@ export function ScannerInterface() {
         </AnimatePresence>
       </motion.div>
 
+      <AnimatePresence>
         {scanMutation.data && (
           <motion.div 
             key={scanMutation.data.scan_id}
