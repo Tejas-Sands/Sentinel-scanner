@@ -1,0 +1,41 @@
+name: Keep Supabase Alive (Deep Ping)
+
+on:
+  schedule:
+    - cron: "0 8 */3 * *"
+  workflow_dispatch:
+
+jobs:
+  ping-supabase:
+    name: Ping Supabase with a real query
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Query Supabase Table
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          echo "⏰ Running keep-alive ping at $(date)"
+
+          # Replace 'your_table_name' with any table in your DB
+          # limit=1 keeps it super lightweight
+          RESPONSE=$(curl --silent --write-out "\n%{http_code}" \
+            --request GET \
+            "$SUPABASE_URL/rest/v1/your_table_name?limit=1" \
+            --header "apikey: $SUPABASE_ANON_KEY" \
+            --header "Authorization: Bearer $SUPABASE_ANON_KEY" \
+            --header "Accept: application/json")
+
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | head -n1)
+
+          echo "📡 Status: $HTTP_CODE"
+          echo "📦 Body: $BODY"
+
+          if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then
+            echo "✅ Supabase pinged successfully!"
+          else
+            echo "❌ Ping failed with status: $HTTP_CODE"
+            exit 1
+          fi
