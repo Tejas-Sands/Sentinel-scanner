@@ -18,11 +18,10 @@ jobs:
         run: |
           echo "⏰ Running keep-alive ping at $(date)"
 
-          # Replace 'your_table_name' with any table in your DB
           # limit=1 keeps it super lightweight
           RESPONSE=$(curl --silent --write-out "\n%{http_code}" \
             --request GET \
-            "$SUPABASE_URL/rest/v1/your_table_name?limit=1" \
+            "$SUPABASE_URL/rest/v1/users?limit=1" \
             --header "apikey: $SUPABASE_ANON_KEY" \
             --header "Authorization: Bearer $SUPABASE_ANON_KEY" \
             --header "Accept: application/json")
